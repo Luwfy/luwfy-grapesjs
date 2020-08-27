@@ -1,0 +1,59 @@
+<head>
+  <script type="text/javascript" src="js/luwfy.grapes.js"></script>
+</head>
+
+<body>
+
+<script type="text/javascript">
+
+/*
+  luwfy.smartComponents = `accordion array breadcrumb button calendar card cardview carousel cdk chart checkbox checkinput chip colorinput colorpanel
+  colorpicker combobox common daterangeinput datetimepicker dockinglayout dropdownbutton dropdownlist element fileupload form ganttchart gauge grid
+  gridpanel input kanban layout led listbox listmenu maskedtextbox menu multicomboinput multiinput multilinetextbox multisplitbutton numerictextbox
+  pager passwordtextbox path pivottable progressbar querybuilder radiobutton rating scheduler scrollbar slider sortable splitter switchbutton
+  table tabs tank textarea textbox timepicker toast tooltip tree validator window`.replace(RegExp("\n","g")).split(' ');
+*/
+
+  luwfy.registerComponent({
+
+    'name': 'React Text',
+    'component': 'Text',
+    'editorJS': 'assets/react.js',
+    'editorCSS': false,
+    'canvasJS': 'assets/react.js',
+    'canvasCSS': false,
+    'rewriteTag': true,
+    'inlineCSS': true,
+    'keepClassNames': false,
+    'traits': [ 'id', 'name', 'placeholder', 'label', 'text', 'value' ],
+    'isReact': true,
+    'componentInstance': 'reactNative.components.Text',
+
+  });
+
+  luwfy.registerComponent({
+
+    'name': 'Smart Gauge',
+    'component': 'smart-gauge',
+    'editorJS': false,
+    'editorCSS': 'assets/smart.default.css',
+    'canvasJS': 'assets/smart/smart.gauge.js',
+    'canvasCSS': 'assets/smart.default.css',
+    'rewriteTag': false,
+    'inlineCSS': false,
+    'keepClassNames': true,
+    'traits': [ 'id', 'name', 'placeholder', 'label', 'text', 'value' ]
+
+  });
+
+  // Editor Assets::
+
+  luwfy.editorJS.push('assets/lodash.min.js');
+  luwfy.editorJS.push('assets/grapes.min.js');
+  luwfy.editorCSS.push('assets/grapes.min.css');
+
+  luwfy.loadEditor();
+
+</script>
+
+</body>
