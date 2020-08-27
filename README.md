@@ -83,9 +83,12 @@ Setup editor path and add lodash dependency:
 
 * You can use relative or absolute path to load editor or resources from any location
 
-luwfy.editorJS.push('assets/lodash.min.js');
-luwfy.editorJS.push('assets/grapes.min.js');
-luwfy.editorCSS.push('assets/grapes.min.css');
+  luwfy.editorJS.push('https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js');
+  luwfy.editorJS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs/dist/grapes.min.js');
+  luwfy.editorJS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.js');
+  luwfy.editorCSS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs/dist/css/grapes.min.css');
+  luwfy.editorCSS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css');
+
 
 4.
 
