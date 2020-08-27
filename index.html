@@ -16,7 +16,9 @@
 
   luwfy.registerComponent({
 
+    'class': 'fa fa-save',
     'name': 'React Text',
+    'category':'Luwfy Form',
     'component': 'Text',
     'editorJS': 'assets/react.js',
     'editorCSS': false,
@@ -33,7 +35,9 @@
 
   luwfy.registerComponent({
 
+    'class': 'fa fa-save',
     'name': 'Smart Gauge',
+    'category':'Luwfy Form',
     'component': 'smart-gauge',
     'editorJS': false,
     'editorCSS': 'assets/smart.default.css',
@@ -48,9 +52,16 @@
 
   // Editor Assets::
 
-  luwfy.editorJS.push('assets/lodash.min.js');
-  luwfy.editorJS.push('assets/grapes.min.js');
-  luwfy.editorCSS.push('assets/grapes.min.css');
+
+
+
+  luwfy.editorJS.push('https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js');
+  luwfy.editorJS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs/dist/grapes.min.js');
+  luwfy.editorJS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.js');
+
+  luwfy.editorCSS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs/dist/css/grapes.min.css');
+  luwfy.editorCSS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css');
+
 
   luwfy.loadEditor();
 

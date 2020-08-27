@@ -6,6 +6,68 @@ luwfy.canvasJS = [];
 luwfy.canvasCSS  = [];
 luwfy.registeredComponents = {};
 
+luwfy.getOverlay = function() {
+
+  if(!document.getElementById('luwfy-grapes-overlay')) {
+    var style = document.createElement('style');
+    style.setAttribute('id', 'luwfy-grapes-overlay');
+    style.innerHTML = `#overlay {
+      position: absolute;
+      display: block;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+    #gjs {
+      width: calc(100% - 80px) !important;
+      height: calc(100% - 80px) !important;
+      margin: 40px;
+    }
+    #overlay-close {
+      float: right;
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 30px;
+      color: orange;
+      background: #dedede;
+      border: 1px solid #dedede;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    `;
+    document.getElementsByTagName("head")[0].appendChild(style);
+  }
+
+  var overlay = luwfy.appendElement('div', 'overlay');
+  var close   = luwfy.appendElement('div', 'overlay-close', overlay)
+  var that    = this;
+
+  close.setAttribute('class', 'fa fa-window-close');
+
+  close.onclick = function() {
+
+    var ol = document.getElementById('overlay');
+    ol.parentNode.removeChild(ol);
+/*
+    setTimeout(function () {
+
+      luwfy.startEditor();
+
+    },1000);
+*/
+  }
+
+  var gjs     = luwfy.appendElement('div', 'gjs', overlay);
+  return overlay;
+
+}
+
 luwfy.registerComponent = function(conf) {
 
   if(conf.canvasJS) {
@@ -51,7 +113,7 @@ luwfy.loadEditor = function() {
     } else {
 
       luwfy.appendElement('div', 'root');
-      luwfy.appendElement('div', 'gjs');
+      //luwfy.appendElement('div', 'gjs');
       luwfy.startEditor();
 
     }
@@ -61,10 +123,15 @@ luwfy.loadEditor = function() {
 
 };
 
-luwfy.appendElement = function(type, id) {
+luwfy.appendElement = function(type, id, target) {
   var tag = document.createElement(type);
   tag.setAttribute('id', id);
-  document.getElementsByTagName('body')[0].appendChild(tag);
+  if(target) {
+    target.appendChild(tag);
+  }  else {
+    document.getElementsByTagName('body')[0].appendChild(tag);
+  }
+  return tag;
 }
 
 luwfy.appendScript = function(src,cb) {
@@ -91,11 +158,19 @@ luwfy.appendStyle = function(src) {
 
 luwfy.startEditor = function() {
 
+    luwfy.getOverlay();
+
     luwfy.editor = grapesjs.init({
       container : '#gjs',
       storageManager: {
         autosave: false,         // Store data automatically
         autoload: false,         // Autoload stored data on init
+      },
+      plugins: ['gjs-preset-webpage'],
+      pluginsOpts: {
+        'gjs-preset-webpage': {
+          // options
+        }
       },
       canvas: {
         styles: luwfy.canvasCSS,
@@ -106,7 +181,6 @@ luwfy.startEditor = function() {
     for(x in luwfy.registeredComponents) {
         luwfy.addComponentToEditor(luwfy.registeredComponents[x]);
     }
-
 
     var newButton = luwfy.editor.Panels.addButton('options',{
       className: 'fa fa-save',
@@ -124,6 +198,12 @@ luwfy.startEditor = function() {
       attributes: { title: 'Save', style: "color: orange"  },
       active: false,
     });
+
+    // Remove extra category
+    const bm = luwfy.editor.BlockManager;
+    const blocks = bm.getAll();
+    const toRemove = blocks.filter(block => block.get('category') === 'Extra');
+    toRemove.forEach(block => bm.remove(block.get('id')))
 
 }
 
@@ -197,6 +277,6 @@ luwfy.addComponentToEditor = function(cmp) {
     },
   });
 
-  luwfy.editor.BlockManager.add(cmp.component, { label: cmp.name, content: tpl });
+  luwfy.editor.BlockManager.add(cmp.component, { label: cmp.name, content: tpl, category: cmp.category || '', content: '<h1>Put your title here</h1>', attributes: { class: cmp.class || '' } });
 
 }
