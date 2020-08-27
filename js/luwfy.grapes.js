@@ -39,26 +39,25 @@ luwfy.loadEditor = function() {
     luwfy.appendStyle(luwfy.editorCSS[x]);
   }
 
-  for(x in luwfy.editorJS) {
+  function callback() {
 
-    function callback() {
-      var script = luwfy.editorJS.shift();
+    var script = luwfy.editorJS.shift();
+    console.log(script);
 
-      if(script) {
+    if(script) {
 
-        luwfy.appendScript(script, callback);
+      luwfy.appendScript(script, callback);
 
-      } else {
+    } else {
 
-        luwfy.appendElement('div', 'root');
-        luwfy.appendElement('div', 'gjs');
-        luwfy.startEditor();
+      luwfy.appendElement('div', 'root');
+      luwfy.appendElement('div', 'gjs');
+      luwfy.startEditor();
 
-      }
     }
-    callback();
-
   }
+
+  callback();
 
 };
 
@@ -107,6 +106,24 @@ luwfy.startEditor = function() {
     for(x in luwfy.registeredComponents) {
         luwfy.addComponentToEditor(luwfy.registeredComponents[x]);
     }
+
+
+    var newButton = luwfy.editor.Panels.addButton('options',{
+      className: 'fa fa-save',
+      command: function(editor) {
+
+        console.log('SAVE');
+        console.log("HTML:: " + editor.getHtml());
+        console.log("CSS :: " + editor.getCss());
+
+        if(luwfy.saveCallback) {
+          luwfy.saveCallback(editor);
+        }
+
+      },
+      attributes: { title: 'Save', style: "color: orange"  },
+      active: false,
+    });
 
 }
 
@@ -183,154 +200,3 @@ luwfy.addComponentToEditor = function(cmp) {
   luwfy.editor.BlockManager.add(cmp.component, { label: cmp.name, content: tpl });
 
 }
-
-luwfy.addSmartToEditor = function() {
-
-  for(x in luwfy.smartComponents) {
-
-    var cmp = luwfy.smartComponents[x];
-    var lbl = 'Smart ' + cmp.charAt(0).toUpperCase() + cmp.slice(1);
-    var el  = 'smart-' + cmp;
-    var tpl = '<' + el + ' data-gjs-type="' + el + '"></' + el + '>';
-
-    const defaultType = luwfy.editor.DomComponents.getType('default');
-
-
-    luwfy.editor.DomComponents.addType(el, {
-      model: {
-        defaults: {
-          traits: [ 'id', 'name', 'placeholder', 'label', 'text', 'value' ]
-        },
-        init() {
-          console.log('Local hook: model.init');
-          // console.log(this);
-          // this.listenTo(this, 'change:testprop', this.handlePropChange);
-          // Here we can listen global hooks with editor.on('...')
-        },
-        updated(property, value, prevValue) {
-
-          // console.log('Local hook: model.updated', 'property', property, 'value', value, 'prevValue', prevValue);
-
-          var that = this;
-          setTimeout(function () {
-              var tmp = that.views[0].$el.attr('class');
-              that.views[0].$el.attr('class', that.views[0].originalClass + ' ' + tmp);
-          }, 10);
-
-          if(cmp.isReact) {
-            reactDOM.render(react.createElement(_.get(cmp.componentInstance), that.attributes.attributes), that.views[0].$el[0]);
-          }
-
-        },
-        // removed() { console.log('Local hook: model.removed'); },
-        // handlePropChange() { console.log(this); }
-      },
-      view: {
-        // init() { console.log('Local hook: view.init'); },
-        onRender() {
-
-          if(cmp.keepClassNames) {
-            var that = this;
-            setTimeout(function () { that.originalClass = that.$el[0].className; }, 10);
-          }
-
-          if(cmp.isReact) {
-            reactDOM.render(react.createElement(_.get(cmp.componentInstance)), this.$el[0]);
-          }
-
-        },
-      },
-    });
-
-    luwfy.editor.BlockManager.add(el, { label: lbl, content: tpl });
-
-  }
-
-}
-
-luwfy.addReactToEditor = function() {
-
-  for(componentName in reactNative.components) {
-
-    var componentObj = reactNative.components[componentName];
-
-    const defaultType = luwfy.editor.DomComponents.getType('default')
-
-    luwfy.editor.DomComponents.addType('ReactNative' + componentName, {
-      model: {
-        tagName: componentName,
-        toHTML: function() {
-          window.test = this;
-          var original = defaultType.model.prototype.toHTML.apply(this);
-          var type     = original.substr(19, original.substr(19).indexOf('"'));
-          var fixed    = '<' + type + ' style="' + JSON.stringify(this.getStyle()).replace(new RegExp('"', 'g'), "'") + '"' +  original.substr(20 + type.length);
-          var final    = fixed.substr(0, fixed.length - 6) + '</' + type + '>';
-          return final;
-        },
-        defaults: {
-          testprop: 1,
-          traits: [
-            'title'
-          ]
-        },
-        init() {
-          console.log('Local hook: model.init');
-          console.log(this);
-          this.listenTo(this, 'change:testprop', this.handlePropChange);
-          // Here we can listen global hooks with editor.on('...')
-        },
-        updated(property, value, prevValue) {
-          console.log('Local hook: model.updated', 'property', property, 'value', value, 'prevValue', prevValue);
-          console.log(this);
-          console.log(property);
-
-          var that = this;
-
-
-          that.attributes.attributes.style = {
-              width: '300px',
-              height: '300px',
-              backgroundColor: 'black',
-              color: '#ff571a'
-          };
-
-          reactDOM.render(react.createElement(componentObj, that.attributes.attributes, that.attributes.attributes.title || false), that.views[0].$el[0]);
-
-        },
-        removed() {
-          console.log('Local hook: model.removed');
-        },
-        handlePropChange() {
-          console.log(this);
-        }
-      },
-      view: {
-        init() {
-          console.log('Local hook: view.init');
-        },
-        onRender() {
-
-          console.log('Local hook: view.onRender');
-          //this.$el[0].textContent = 'Hello';
-          var that = this;
-          console.log(react);
-          console.log(this);
-
-          reactDOM.render(react.createElement(componentObj, { style: {
-              width: '300px',
-              height: '300px',
-              backgroundColor: 'black',
-              color: '#ff571a'
-          } }, 'Hello World'), this.$el[0]);
-
-        },
-      }
-    });
-
-    luwfy.editor.BlockManager.add('ReactNative' + componentName, { label: 'React ' + componentName, content: '<div replace-type="' + componentName + '" data-gjs-type="ReactNative' + componentName + '"></div>' });
-
-  }
-
-}
-
-/* Smart components */
