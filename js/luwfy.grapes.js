@@ -277,6 +277,6 @@ luwfy.addComponentToEditor = function(cmp) {
     },
   });
 
-  luwfy.editor.BlockManager.add(cmp.component, { label: cmp.name, content: tpl, category: cmp.category || '', content: '<h1>Put your title here</h1>', attributes: { class: cmp.class || '' } });
+  luwfy.editor.BlockManager.add(cmp.component, { label: cmp.name, content: tpl, category: cmp.category || '', attributes: { class: cmp.class || '' } });
 
 }
