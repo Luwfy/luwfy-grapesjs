@@ -6,12 +6,33 @@ Allows loading web components and react components into editor with additional f
 
 Sample Usage:
 
-1. <script type="text/javascript" src="js/luwfy.grapes.js"></script>
+1.
+
+  Load the library with
+  <script type="text/javascript" src="js/luwfy.grapes.js"></script>
+
+  Or dynamically from anywhere in the
+
+  var script = document.createElement('script');
+  script.setAttribute('type', 'text/javascript');
+  document.getElementsByTagName('head')[0].appendChild(script);
+  script.onload = function () { // Editor is ready };
+  script.setAttribute('src', src);
+
+2.
+
+Register your components
 
 
-2. 
+* React requires React and ReactDOM to be available in window scope
+* Project needs to expose components in reachable scope defined per component in componentInstance
+* Add isReact flag to use ReactDOM.render for component
 
-Register react component:
+Availble react native components in assets:
+
+Modal, StatusBar, Alert, Picker, Switch, ScrollView, TextInput, Button, Image, StyleSheet, Text, View
+
+Example register react component:
 
 luwfy.registerComponent({
 
@@ -30,8 +51,15 @@ luwfy.registerComponent({
 
   });
 
+Availble smart components in assets:
 
-Register smart component:
+accordion array breadcrumb button calendar card cardview carousel cdk chart checkbox checkinput chip colorinput colorpanel
+colorpicker combobox common daterangeinput datetimepicker dockinglayout dropdownbutton dropdownlist element fileupload form ganttchart gauge grid
+gridpanel input kanban layout led listbox listmenu maskedtextbox menu multicomboinput multiinput multilinetextbox multisplitbutton numerictextbox
+pager passwordtextbox path pivottable progressbar querybuilder radiobutton rating scheduler scrollbar slider sortable splitter switchbutton
+table tabs tank textarea textbox timepicker toast tooltip tree validator window
+
+Example register smart component:
 
 luwfy.registerComponent({
 
@@ -49,18 +77,39 @@ luwfy.registerComponent({
 });
 
 
-3. 
+3.
 
 Setup editor path and add lodash dependency:
+
+* You can use relative or absolute path to load editor or resources from any location
 
 luwfy.editorJS.push('assets/lodash.min.js');
 luwfy.editorJS.push('assets/grapes.min.js');
 luwfy.editorCSS.push('assets/grapes.min.css');
 
-
-4. 
+4.
 
 Start the editor:
 
 luwfy.loadEditor();
 
+
+5.
+
+You can access editor in luwfy.editor
+
+6.
+
+For the save icon
+You can overwrite luwfy.saveCallback with custom function
+
+7.
+
+Editor contents are always available in
+
+luwfy.editor.getHtml();
+luwfy.editor.getCss();
+
+8.
+
+After editor was loaded once it can be displayed again with luwfy.showEditor();
