@@ -95,7 +95,7 @@ luwfy.registerComponent = function(conf) {
 
 }
 
-luwfy.loadEditor = function() {
+luwfy.loadEditor = function(cb) {
 
   for(x in luwfy.editorCSS) {
     luwfy.appendStyle(luwfy.editorCSS[x]);
@@ -114,7 +114,11 @@ luwfy.loadEditor = function() {
 
       luwfy.appendElement('div', 'root');
       //luwfy.appendElement('div', 'gjs');
-      luwfy.startEditor();
+      if(cb) {
+        cb();
+      } else {
+        luwfy.startEditor();
+      }
 
     }
   }
@@ -156,12 +160,13 @@ luwfy.appendStyle = function(src) {
 
 };
 
-luwfy.startEditor = function() {
+luwfy.startEditor = function(opts, cb) {
 
     luwfy.getOverlay();
 
     luwfy.editor = grapesjs.init({
       container : '#gjs',
+      components: opts.content || '',
       storageManager: {
         autosave: false,         // Store data automatically
         autoload: false,         // Autoload stored data on init
@@ -204,6 +209,10 @@ luwfy.startEditor = function() {
     const blocks = bm.getAll();
     const toRemove = blocks.filter(block => block.get('category') === 'Extra');
     toRemove.forEach(block => bm.remove(block.get('id')))
+
+    if(cb) {
+      setTimeout(function () { cb(luwfy.editor); } , 100);
+    }
 
 }
 

@@ -50,10 +50,31 @@
 
   });
 
+  luwfy.registerComponent({
+
+    'class': 'fa fa-save',
+    'name': 'Smart Button',
+    'category':'Luwfy Form',
+    'component': 'smart-button',
+    'editorJS': false,
+    'editorCSS': 'assets/smart.default.css',
+    'canvasJS': 'assets/smart/smart.button.js',
+    'canvasCSS': 'assets/smart.default.css',
+    'rewriteTag': false,
+    'inlineCSS': false,
+    'keepClassNames': true,
+/*    'traits': [ 'id', 'name', 'placeholder', 'label', {
+  type: 'text', // If you don't specify the type, the `text` is the default one
+  name: 'content', // Required and available for all traits
+  label: 'Inner Text', // The label you will see near the input
+  // label: false, // If you set label to `false`, the label column will be removed
+  placeholder: 'Insert text', // Placeholder to show inside the input
+  default: 'Contents',
+}, 'value' ]*/
+
+  });
+
   // Editor Assets::
-
-
-
 
   luwfy.editorJS.push('https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js');
   luwfy.editorJS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs/dist/grapes.min.js');
@@ -63,7 +84,11 @@
   luwfy.editorCSS.push('https://cdn.jsdelivr.net/gh/artf/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css');
 
 
-  luwfy.loadEditor();
+  luwfy.loadEditor(function () {
+    luwfy.startEditor({ content: '<smart-button>Hello World</smart-button>' }, function(editor) {
+        console.log(editor);
+    });
+  });
 
 </script>
 
