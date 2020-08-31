@@ -217,8 +217,8 @@ luwfy.addComponentToEditor = function (cmp) {
     model: {
       defaults: {
         traits: cmp.traits || [],
-        draggable: cmp.draggable, // Can be dropped only inside `form` elements
-        droppable: cmp.droppable, // Can't drop other elements inside
+        draggable: cmp.draggable, // Can be dropped only inside `form` elements EX:"form, form *"
+        droppable: cmp.droppable, // Can't drop other elements inside ex:"true"
       },
       toHTML: function () {
         var original = defaultType.model.prototype.toHTML.apply(this);
@@ -263,6 +263,7 @@ luwfy.addComponentToEditor = function (cmp) {
       },
     },
   });
-
-  luwfy.editor.BlockManager.add(cmp.component, { label: cmp.name, content: tpl, category: cmp.category || "", attributes: { class: cmp.class || "" } });
+  if (cmp.displayInPalette == true || cmp.displayInPalette == null) {
+    luwfy.editor.BlockManager.add(cmp.component, { label: cmp.name, content: tpl, category: cmp.category || "", attributes: { class: cmp.class || "" } });
+  }
 };
