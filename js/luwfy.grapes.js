@@ -210,7 +210,7 @@ luwfy.addComponentToEditor = function (cmp) {
   if (cmp.template) {
     tpl = cmp.component;
   }
-
+  console.log("tpl form grape", tpl);
   const defaultType = luwfy.editor.DomComponents.getType("default");
 
   luwfy.editor.DomComponents.addType(cmp.name, {
