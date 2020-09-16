@@ -86,6 +86,7 @@ luwfy.registerComponentsFromURL = function (endpoint) {
 
 luwfy.registerComponentsArray = function (array) {
   array.forEach((conf) => {
+    console.log("FOR_EACH", array, conf);
     luwfy.registerComponent(conf);
   });
 
