@@ -207,6 +207,7 @@ luwfy.startEditor = function (opts, cb) {
           resolve("resolved");
         })
         .catch((error) => {
+          console.log("ERROR_____", error);
           luwfy.editor = grapesjs.init({
             container: "#gjs",
             components: "",
@@ -228,7 +229,6 @@ luwfy.startEditor = function (opts, cb) {
               scripts: luwfy.canvasJS,
             },
           });
-          console.log("RESPONSE_ERROR_ENDPOINT", response);
           resolve("resolved");
         });
     } else {
