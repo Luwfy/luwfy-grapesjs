@@ -70,6 +70,28 @@ luwfy.getOverlay = function () {
   return overlay;
 };
 
+luwfy.registerComponentsFromURL = function (endpoint) {
+  if (endpoint) {
+    fetch(endpoint)
+      .then((response) => {
+        // handle the response
+        console.log("RESPONSE_GET_ENDPOINT", response);
+      })
+      .catch((error) => {
+        console.log("RESPONSE_ERROR_ENDPOINT", response);
+        // handle the error
+      });
+  }
+};
+
+luwfy.registerComponentsArray = function (array) {
+  array.forEach((conf) => {
+    luwfy.registerComponent(conf);
+  });
+
+  console.log("ARRAY");
+};
+
 luwfy.registerComponent = function (conf) {
   if (conf.canvasJS) {
     if (luwfy.canvasJS.indexOf(conf.canvasJS) == -1) {
@@ -191,6 +213,7 @@ luwfy.startEditor = function (opts, cb) {
       console.log("POST_URL", luwfy.postURL, json);
 
       if (luwfy.saveCallback) {
+        console.log("POST_URL_CALLBACK", luwfy.postURL, json);
         luwfy.saveCallback(editor);
       }
     },
