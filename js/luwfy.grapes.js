@@ -204,7 +204,7 @@ luwfy.startEditor = function (opts, cb) {
 
         // handle the response
         console.log("RESPONSE_GET_ENDPOINT", response);
-        resolve("resolved");
+        // resolve("resolved");
       })
       .catch((error) => {
         console.log("ERROR_____", error);
@@ -229,7 +229,7 @@ luwfy.startEditor = function (opts, cb) {
             scripts: luwfy.canvasJS,
           },
         });
-        resolve("resolved");
+        // resolve("resolved");
       });
   } else {
     luwfy.editor = grapesjs.init({
@@ -254,7 +254,7 @@ luwfy.startEditor = function (opts, cb) {
       },
     });
 
-    resolve("resolved");
+    // resolve("resolved");
   }
 
   for (x in luwfy.registeredComponents) {
