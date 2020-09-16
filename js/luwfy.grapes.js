@@ -174,89 +174,88 @@ luwfy.appendStyle = function (src) {
 };
 
 luwfy.startEditor = function (opts, cb) {
-  return new Promise((resolve) => {
-    luwfy.getOverlay();
+  // return new Promise((resolve) => {
+  luwfy.getOverlay();
 
-    if (opts.getURL) {
-      fetch(opts.getURL)
-        .then((response) => {
-          luwfy.editor = grapesjs.init({
-            container: "#gjs",
-            components: response || "",
-            storageManager: {
-              type: "remote",
-              autosave: false, // Store data automatically
-              autoload: false, // Autoload stored data on init
-              // urlStore: "http://endpoint/store-template/some-id-123",
-              // urlLoad: "http://endpoint/load-template/some-id-123",
-            },
-            plugins: ["gjs-preset-webpage"],
-            pluginsOpts: {
-              "gjs-preset-webpage": {
-                // options
-              },
-            },
-            canvas: {
-              styles: luwfy.canvasCSS,
-              scripts: luwfy.canvasJS,
-            },
-          });
-
-          // handle the response
-          console.log("RESPONSE_GET_ENDPOINT", response);
-          resolve("resolved");
-        })
-        .catch((error) => {
-          console.log("ERROR_____", error);
-          luwfy.editor = grapesjs.init({
-            container: "#gjs",
-            components: "",
-            storageManager: {
-              type: "remote",
-              autosave: false, // Store data automatically
-              autoload: false, // Autoload stored data on init
-              // urlStore: "http://endpoint/store-template/some-id-123",
-              // urlLoad: "http://endpoint/load-template/some-id-123",
-            },
-            plugins: ["gjs-preset-webpage"],
-            pluginsOpts: {
-              "gjs-preset-webpage": {
-                // options
-              },
-            },
-            canvas: {
-              styles: luwfy.canvasCSS,
-              scripts: luwfy.canvasJS,
-            },
-          });
-          resolve("resolved");
-        });
-    } else {
-      luwfy.editor = grapesjs.init({
-        container: "#gjs",
-        components: opts.content || "",
-        storageManager: {
-          type: "remote",
-          autosave: false, // Store data automatically
-          autoload: false, // Autoload stored data on init
-          // urlStore: "http://endpoint/store-template/some-id-123",
-          // urlLoad: "http://endpoint/load-template/some-id-123",
-        },
-        plugins: ["gjs-preset-webpage"],
-        pluginsOpts: {
-          "gjs-preset-webpage": {
-            // options
+  if (opts.getURL) {
+    fetch(opts.getURL)
+      .then((response) => {
+        luwfy.editor = grapesjs.init({
+          container: "#gjs",
+          components: response || "",
+          storageManager: {
+            type: "remote",
+            autosave: false, // Store data automatically
+            autoload: false, // Autoload stored data on init
+            // urlStore: "http://endpoint/store-template/some-id-123",
+            // urlLoad: "http://endpoint/load-template/some-id-123",
           },
-        },
-        canvas: {
-          styles: luwfy.canvasCSS,
-          scripts: luwfy.canvasJS,
-        },
-      });
+          plugins: ["gjs-preset-webpage"],
+          pluginsOpts: {
+            "gjs-preset-webpage": {
+              // options
+            },
+          },
+          canvas: {
+            styles: luwfy.canvasCSS,
+            scripts: luwfy.canvasJS,
+          },
+        });
 
-      resolve("resolved");
-    }
-  });
+        // handle the response
+        console.log("RESPONSE_GET_ENDPOINT", response);
+        resolve("resolved");
+      })
+      .catch((error) => {
+        console.log("ERROR_____", error);
+        luwfy.editor = grapesjs.init({
+          container: "#gjs",
+          components: "",
+          storageManager: {
+            type: "remote",
+            autosave: false, // Store data automatically
+            autoload: false, // Autoload stored data on init
+            // urlStore: "http://endpoint/store-template/some-id-123",
+            // urlLoad: "http://endpoint/load-template/some-id-123",
+          },
+          plugins: ["gjs-preset-webpage"],
+          pluginsOpts: {
+            "gjs-preset-webpage": {
+              // options
+            },
+          },
+          canvas: {
+            styles: luwfy.canvasCSS,
+            scripts: luwfy.canvasJS,
+          },
+        });
+        resolve("resolved");
+      });
+  } else {
+    luwfy.editor = grapesjs.init({
+      container: "#gjs",
+      components: opts.content || "",
+      storageManager: {
+        type: "remote",
+        autosave: false, // Store data automatically
+        autoload: false, // Autoload stored data on init
+        // urlStore: "http://endpoint/store-template/some-id-123",
+        // urlLoad: "http://endpoint/load-template/some-id-123",
+      },
+      plugins: ["gjs-preset-webpage"],
+      pluginsOpts: {
+        "gjs-preset-webpage": {
+          // options
+        },
+      },
+      canvas: {
+        styles: luwfy.canvasCSS,
+        scripts: luwfy.canvasJS,
+      },
+    });
+
+    resolve("resolved");
+  }
 
   for (x in luwfy.registeredComponents) {
     luwfy.addComponentToEditor(luwfy.registeredComponents[x]);
@@ -294,6 +293,8 @@ luwfy.startEditor = function (opts, cb) {
       cb(luwfy.editor);
     }, 100);
   }
+
+  //});
 };
 
 luwfy.addComponentToEditor = function (cmp) {
