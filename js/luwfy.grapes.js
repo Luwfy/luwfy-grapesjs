@@ -1,3 +1,4 @@
+console.log("TEST", window);
 if (!window.luwfy) {
   window.luwfy = {};
 }
@@ -7,6 +8,8 @@ luwfy.editorCSS = [];
 luwfy.canvasJS = [];
 luwfy.canvasCSS = [];
 luwfy.registeredComponents = {};
+
+luwfy.postURL = "";
 
 luwfy.getOverlay = function () {
   if (!document.getElementById("luwfy-grapes-overlay")) {
@@ -153,8 +156,11 @@ luwfy.startEditor = function (opts, cb) {
     container: "#gjs",
     components: opts.content || "",
     storageManager: {
+      type: "remote",
       autosave: false, // Store data automatically
       autoload: false, // Autoload stored data on init
+      urlStore: "http://endpoint/store-template/some-id-123",
+      urlLoad: "http://endpoint/load-template/some-id-123",
     },
     plugins: ["gjs-preset-webpage"],
     pluginsOpts: {
@@ -178,6 +184,11 @@ luwfy.startEditor = function (opts, cb) {
       console.log("SAVE");
       console.log("HTML:: " + editor.getHtml());
       console.log("CSS :: " + editor.getCss());
+      let json = {
+        html: editor.getHtml(),
+        css: editor.getCss(),
+      };
+      console.log("POST_URL", luwfy.postURL, json);
 
       if (luwfy.saveCallback) {
         luwfy.saveCallback(editor);
@@ -202,10 +213,22 @@ luwfy.startEditor = function (opts, cb) {
 
 luwfy.addComponentToEditor = function (cmp) {
   var lbl = cmp.name;
-  var tpl = "<" + cmp.component + ' data-gjs-type="' + cmp.name + '"></' + cmp.component + ">";
+  var tpl =
+    "<" +
+    cmp.component +
+    ' data-gjs-type="' +
+    cmp.name +
+    '"></' +
+    cmp.component +
+    ">";
 
   if (cmp.rewriteTag) {
-    tpl = '<div replace-type="' + cmp.component + '" data-gjs-type="' + cmp.name + '"></div>';
+    tpl =
+      '<div replace-type="' +
+      cmp.component +
+      '" data-gjs-type="' +
+      cmp.name +
+      '"></div>';
   }
   if (cmp.template) {
     tpl = cmp.component;
@@ -217,15 +240,23 @@ luwfy.addComponentToEditor = function (cmp) {
     model: {
       defaults: {
         traits: cmp.traits || [],
-        draggable: cmp.draggable, // Can be dropped only inside `form` elements EX:"form, form *"
-        droppable: cmp.droppable, // Can't drop other elements inside ex:"true"
+        //TODO UNCOMMENT for draggable/dropable items
+        //draggable: cmp.draggable, // Can be dropped only inside `form` elements EX:"form, form *"
+        // droppable: cmp.droppable, // Can't drop other elements inside ex:"true"
       },
       toHTML: function () {
         var original = defaultType.model.prototype.toHTML.apply(this);
 
         if (cmp.rewriteTag) {
           var type = original.substr(19, original.substr(19).indexOf('"'));
-          var css = cmp.inlineCSS ? ' style="' + JSON.stringify(this.getStyle()).replace(new RegExp('"', "g"), "'") + '"' : "";
+          var css = cmp.inlineCSS
+            ? ' style="' +
+              JSON.stringify(this.getStyle()).replace(
+                new RegExp('"', "g"),
+                "'"
+              ) +
+              '"'
+            : "";
           var fixed = "<" + type + css + original.substr(20 + type.length);
           var modified = fixed.substr(0, fixed.length - 6) + "</" + type + ">";
           return modified;
@@ -239,12 +270,21 @@ luwfy.addComponentToEditor = function (cmp) {
           var that = this;
           setTimeout(function () {
             var tmp = that.views[0].$el.attr("class");
-            that.views[0].$el.attr("class", that.views[0].originalClass + " " + tmp);
+            that.views[0].$el.attr(
+              "class",
+              that.views[0].originalClass + " " + tmp
+            );
           }, 10);
         }
 
         if (cmp.isReact) {
-          reactDOM.render(react.createElement(_.get(window, cmp.componentInstance), that.attributes.attributes), that.views[0].$el[0]);
+          reactDOM.render(
+            react.createElement(
+              _.get(window, cmp.componentInstance),
+              that.attributes.attributes
+            ),
+            that.views[0].$el[0]
+          );
         }
       },
     },
@@ -258,12 +298,20 @@ luwfy.addComponentToEditor = function (cmp) {
         }
 
         if (cmp.isReact) {
-          reactDOM.render(react.createElement(_.get(window, cmp.componentInstance)), this.$el[0]);
+          reactDOM.render(
+            react.createElement(_.get(window, cmp.componentInstance)),
+            this.$el[0]
+          );
         }
       },
     },
   });
   if (cmp.displayInPalette == true || cmp.displayInPalette == null) {
-    luwfy.editor.BlockManager.add(cmp.component, { label: cmp.name, content: tpl, category: cmp.category || "", attributes: { class: cmp.class || "" } });
+    luwfy.editor.BlockManager.add(cmp.component, {
+      label: cmp.name,
+      content: tpl,
+      category: cmp.category || "",
+      attributes: { class: cmp.class || "" },
+    });
   }
 };
