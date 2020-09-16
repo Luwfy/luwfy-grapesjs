@@ -74,6 +74,7 @@ luwfy.registerComponentsFromURL = function (endpoint) {
   if (endpoint) {
     fetch(endpoint)
       .then((response) => {
+        luwfy.registerComponentsArray(response);
         // handle the response
         console.log("RESPONSE_GET_ENDPOINT", response);
       })
@@ -174,28 +175,82 @@ luwfy.appendStyle = function (src) {
 
 luwfy.startEditor = function (opts, cb) {
   luwfy.getOverlay();
+  if (opts.getURL) {
+    fetch(opts.getURL)
+      .then((response) => {
+        luwfy.editor = grapesjs.init({
+          container: "#gjs",
+          components: response || "",
+          storageManager: {
+            type: "remote",
+            autosave: false, // Store data automatically
+            autoload: false, // Autoload stored data on init
+            // urlStore: "http://endpoint/store-template/some-id-123",
+            // urlLoad: "http://endpoint/load-template/some-id-123",
+          },
+          plugins: ["gjs-preset-webpage"],
+          pluginsOpts: {
+            "gjs-preset-webpage": {
+              // options
+            },
+          },
+          canvas: {
+            styles: luwfy.canvasCSS,
+            scripts: luwfy.canvasJS,
+          },
+        });
 
-  luwfy.editor = grapesjs.init({
-    container: "#gjs",
-    components: opts.content || "",
-    storageManager: {
-      type: "remote",
-      autosave: false, // Store data automatically
-      autoload: false, // Autoload stored data on init
-      urlStore: "http://endpoint/store-template/some-id-123",
-      urlLoad: "http://endpoint/load-template/some-id-123",
-    },
-    plugins: ["gjs-preset-webpage"],
-    pluginsOpts: {
-      "gjs-preset-webpage": {
-        // options
+        // handle the response
+        console.log("RESPONSE_GET_ENDPOINT", response);
+      })
+      .catch((error) => {
+        luwfy.editor = grapesjs.init({
+          container: "#gjs",
+          components: "",
+          storageManager: {
+            type: "remote",
+            autosave: false, // Store data automatically
+            autoload: false, // Autoload stored data on init
+            // urlStore: "http://endpoint/store-template/some-id-123",
+            // urlLoad: "http://endpoint/load-template/some-id-123",
+          },
+          plugins: ["gjs-preset-webpage"],
+          pluginsOpts: {
+            "gjs-preset-webpage": {
+              // options
+            },
+          },
+          canvas: {
+            styles: luwfy.canvasCSS,
+            scripts: luwfy.canvasJS,
+          },
+        });
+        console.log("RESPONSE_ERROR_ENDPOINT", response);
+        // handle the error
+      });
+  } else {
+    luwfy.editor = grapesjs.init({
+      container: "#gjs",
+      components: opts.content || "",
+      storageManager: {
+        type: "remote",
+        autosave: false, // Store data automatically
+        autoload: false, // Autoload stored data on init
+        // urlStore: "http://endpoint/store-template/some-id-123",
+        // urlLoad: "http://endpoint/load-template/some-id-123",
       },
-    },
-    canvas: {
-      styles: luwfy.canvasCSS,
-      scripts: luwfy.canvasJS,
-    },
-  });
+      plugins: ["gjs-preset-webpage"],
+      pluginsOpts: {
+        "gjs-preset-webpage": {
+          // options
+        },
+      },
+      canvas: {
+        styles: luwfy.canvasCSS,
+        scripts: luwfy.canvasJS,
+      },
+    });
+  }
 
   for (x in luwfy.registeredComponents) {
     luwfy.addComponentToEditor(luwfy.registeredComponents[x]);
