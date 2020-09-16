@@ -79,7 +79,7 @@ luwfy.registerComponentsFromURL = function (endpoint) {
         console.log("RESPONSE_GET_ENDPOINT", response);
       })
       .catch((error) => {
-        console.log("RESPONSE_ERROR_ENDPOINT", response);
+        // console.log("RESPONSE_ERROR_ENDPOINT", response);
         // handle the error
       });
   }
