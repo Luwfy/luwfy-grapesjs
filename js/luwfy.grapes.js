@@ -1,4 +1,4 @@
-console.log("TEST", window);
+console.log("TESTAAAA", window);
 if (!window.luwfy) {
   window.luwfy = {};
 }
@@ -16,16 +16,11 @@ luwfy.getOverlay = function () {
     var style = document.createElement("style");
     style.setAttribute("id", "luwfy-grapes-overlay");
     style.innerHTML = `#overlay {
-      position: absolute;
       display: block;
-      width: 100%;
-      height: 100%;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: rgba(0,0,0,0.5);
-      z-index: 1000;
     }
     #gjs {
       width: calc(100% - 80px) !important;
@@ -45,26 +40,26 @@ luwfy.getOverlay = function () {
       cursor: pointer;
     }
     `;
-    document.getElementsByTagName("head")[0].appendChild(style);
+    document.getElementsByTagName("body")[0].appendChild(style);
   }
 
   var overlay = luwfy.appendElement("div", "overlay");
-  var close = luwfy.appendElement("div", "overlay-close", overlay);
+  // var close = luwfy.appendElement("div", "overlay-close", overlay);
   var that = this;
 
-  close.setAttribute("class", "fa fa-window-close");
+  //   close.setAttribute("class", "fa fa-window-close");
 
-  close.onclick = function () {
-    var ol = document.getElementById("overlay");
-    ol.parentNode.removeChild(ol);
-    /*
-    setTimeout(function () {
+  //   close.onclick = function () {
+  //     var ol = document.getElementById("overlay");
+  //     ol.parentNode.removeChild(ol);
+  //     /*
+  //     setTimeout(function () {
 
-      luwfy.startEditor();
+  //       luwfy.startEditor();
 
-    },1000);
-*/
-  };
+  //     },1000);
+  // */
+  //   };
 
   var gjs = luwfy.appendElement("div", "gjs", overlay);
   return overlay;
@@ -242,7 +237,7 @@ luwfy.startEditor = function (opts, cb) {
         // urlStore: "http://endpoint/store-template/some-id-123",
         // urlLoad: "http://endpoint/load-template/some-id-123",
       },
-      plugins: ["gjs-preset-webpage"],
+      plugins: ["gjs-preset-webpage", myNewComponentTypes],
       pluginsOpts: {
         "gjs-preset-webpage": {
           // options
@@ -297,7 +292,105 @@ luwfy.startEditor = function (opts, cb) {
   //});
 };
 
+const myNewComponentTypes = (editor) => {
+  const defaultType = editor.DomComponents.getType("default");
+  for (x in luwfy.registeredComponents) {
+    console.log("ELEMENTS_VALUES", luwfy.registeredComponents[x]);
+    let cmp = luwfy.registeredComponents[x];
+    editor.DomComponents.addType(cmp.name, {
+      isComponent: (el) => {
+        console.log(
+          "el.tagName",
+          cmp.component.toUpperCase() == el.tagName,
+          cmp.component.toUpperCase(),
+          el.tagName
+        );
+
+        return cmp.component.toUpperCase() == el.tagName;
+        //   if (true || el.tagName == "SMART-BUTTON") {
+        //   }
+        //   return true;
+      },
+
+      model: {
+        defaults: {
+          traits: cmp.traits || [],
+          //TODO UNCOMMENT for draggable/dropable items
+          //draggable: cmp.draggable, // Can be dropped only inside `form` elements EX:"form, form *"
+          // droppable: cmp.droppable, // Can't drop other elements inside ex:"true"
+        },
+        toHTML: function () {
+          var original = defaultType.model.prototype.toHTML.apply(this);
+
+          if (cmp.rewriteTag) {
+            var type = original.substr(19, original.substr(19).indexOf('"'));
+            var css = cmp.inlineCSS
+              ? ' style="' +
+                JSON.stringify(this.getStyle()).replace(
+                  new RegExp('"', "g"),
+                  "'"
+                ) +
+                '"'
+              : "";
+            var fixed = "<" + type + css + original.substr(20 + type.length);
+            var modified =
+              fixed.substr(0, fixed.length - 6) + "</" + type + ">";
+            return modified;
+          } else {
+            return original;
+          }
+        },
+        init() {},
+        updated(property, value, prevValue) {
+          console.log("UPDATED_2");
+          if (cmp.keepClassNames) {
+            var that = this;
+            setTimeout(function () {
+              var tmp = that.views[0].$el.attr("class");
+              that.views[0].$el.attr(
+                "class",
+                that.views[0].originalClass + " " + tmp
+              );
+            }, 10);
+          }
+
+          if (cmp.isReact) {
+            reactDOM.render(
+              react.createElement(
+                _.get(window, cmp.componentInstance),
+                that.attributes.attributes
+              ),
+              that.views[0].$el[0]
+            );
+          }
+        },
+      },
+      view: {
+        onRender() {
+          if (cmp.keepClassNames) {
+            var that = this;
+            setTimeout(function () {
+              that.originalClass = that.$el[0].className;
+            }, 10);
+          }
+
+          if (cmp.isReact) {
+            reactDOM.render(
+              react.createElement(_.get(window, cmp.componentInstance)),
+              this.$el[0]
+            );
+          }
+        },
+      },
+    });
+
+    // luwfy.addComponentToEditor(luwfy.registeredComponents[x]);
+  }
+};
+
 luwfy.addComponentToEditor = function (cmp) {
+  console.trace();
+  console.log("addComponentToEditor");
   var lbl = cmp.name;
   var tpl =
     "<" +
@@ -319,10 +412,27 @@ luwfy.addComponentToEditor = function (cmp) {
   if (cmp.template) {
     tpl = cmp.component;
   }
-  console.log("tpl form grape", tpl);
+  console.log("tpl form grape", cmp);
+
   const defaultType = luwfy.editor.DomComponents.getType("default");
 
+  console.log("tpl form grape 2", cmp, luwfy.editor.DomComponents);
+
   luwfy.editor.DomComponents.addType(cmp.name, {
+    isComponent: (el) => {
+      console.log(
+        "el.tagName",
+        cmp.component.toUpperCase() == el.tagName,
+        cmp.component.toUpperCase(),
+        el.tagName
+      );
+
+      return cmp.component.toUpperCase() == el.tagName;
+      //   if (true || el.tagName == "SMART-BUTTON") {
+      //   }
+      //   return true;
+    },
+
     model: {
       defaults: {
         traits: cmp.traits || [],
@@ -352,6 +462,7 @@ luwfy.addComponentToEditor = function (cmp) {
       },
       init() {},
       updated(property, value, prevValue) {
+        console.log("UPDATED_3");
         if (cmp.keepClassNames) {
           var that = this;
           setTimeout(function () {
@@ -392,7 +503,9 @@ luwfy.addComponentToEditor = function (cmp) {
       },
     },
   });
+
   if (cmp.displayInPalette == true || cmp.displayInPalette == null) {
+    console.log("TESTQQAA");
     luwfy.editor.BlockManager.add(cmp.component, {
       label: cmp.name,
       content: tpl,
